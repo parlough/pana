@@ -99,7 +99,8 @@ String _diffLinesToCharsMunge(
 /// the List of unique strings. The zeroth element of the List of
 /// unique strings is intentionally blank.
 @visibleForTesting
-Map<String, dynamic> diffLinesToChars(String text1, String text2) {
+({String chars1, String chars2, List<String> lineArray}) diffLinesToChars(
+    String text1, String text2) {
   final lineArray = <String>[];
   final lineHash = HashMap<String, int>();
   // e.g. linearray[4] == 'Hello\n'
@@ -113,7 +114,7 @@ Map<String, dynamic> diffLinesToChars(String text1, String text2) {
   final chars1 = _diffLinesToCharsMunge(text1, lineArray, lineHash, 40000);
   final chars2 = _diffLinesToCharsMunge(text2, lineArray, lineHash, 65535);
 
-  return {'chars1': chars1, 'chars2': chars2, 'lineArray': lineArray};
+  return (chars1: chars1, chars2: chars2, lineArray: lineArray);
 }
 
 int diffLevenshteinWord(Iterable<Diff> diffs) {

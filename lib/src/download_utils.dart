@@ -41,16 +41,16 @@ Future<void> downloadPackage(
       throw Exception(
           'Unable to access URL: "$versionsUri" (status code: ${versionsRs.statusCode}).');
     }
-    final versionsJson = json.decode(versionsRs.body);
+    final versionsJson = json.decode(versionsRs.body) as Map<String, Object?>;
     if (version == null) {
-      version = versionsJson['latest']['version'] as String;
+      version =
+          (versionsJson['latest'] as Map<String, Object?>)['version'] as String;
       log.fine('Latest version is: $version');
     }
 
-    final versions = versionsJson['versions'] as List;
-    final data = versions
-        .cast<Map<String, dynamic>>()
-        .firstWhereOrNull((e) => e['version'] == version);
+    final versions =
+        (versionsJson['versions'] as List).cast<Map<String, Object?>>();
+    final data = versions.firstWhereOrNull((e) => e['version'] == version);
     if (data == null) {
       log.info(
           'Available versions: ${versions.map((e) => e['version']).join(', ')}');
@@ -113,7 +113,7 @@ class UrlChecker {
 }
 
 /// Extracts a `.tar.gz` file from [tarball] to [destination].
-Future _extractTarGz(Stream<List<int>> tarball, String destination) async {
+Future<void> _extractTarGz(Stream<List<int>> tarball, String destination) async {
   log.fine('Extracting .tar.gz stream to $destination.');
   final reader = TarReader(tarball.transform(gzip.decoder));
   while (await reader.moveNext()) {

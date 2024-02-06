@@ -62,7 +62,7 @@ Future<VerifiedRepository?> checkRepository({
     }
   }
 
-  void failVerification(String message, [error, StackTrace? st]) {
+  void failVerification(String message, [Object? error, StackTrace? st]) {
     verificationFailure = message;
     log.info(message, error, st);
   }
@@ -108,12 +108,12 @@ Future<VerifiedRepository?> checkRepository({
       }
       // TODO: consider to allow the exceptions to pass here, to allow an
       //       unrelated, but badly formatted pubspec.yaml in the repository.
-      // ignore: prefer_typing_uninitialized_variables
-      var yamlDoc;
+      Object? yamlDoc;
       try {
         yamlDoc = yaml.loadYaml(content);
       } on FormatException catch (e, st) {
         log.info('Invalid yaml file: $path', e, st);
+        // ignore: avoid_catching_errors
       } on ArgumentError catch (e, st) {
         log.info('Invalid yaml file: $path', e, st);
       }
@@ -124,7 +124,7 @@ Future<VerifiedRepository?> checkRepository({
             '`$path` from the repository is not a valid YAML document.');
       }
 
-      late final Pubspec gitPubspec;
+      final Pubspec gitPubspec;
       try {
         gitPubspec = Pubspec.parseYaml(content);
       } on FormatException catch (e, st) {
@@ -155,7 +155,7 @@ Future<VerifiedRepository?> checkRepository({
             hasMatchingName: true,
             '`$path` from the repository has no `repository` or `homepage` URL.');
       }
-      late Repository gitRepoUrl;
+      final Repository gitRepoUrl;
       try {
         gitRepoUrl = Repository.parseUrl(gitRepoOrHomepage);
       } on FormatException catch (e) {
@@ -234,6 +234,7 @@ Future<VerifiedRepository?> checkRepository({
   } on FormatException catch (e, st) {
     failVerification(
         'Unable to parse `pubspec.yaml` from git repository. $e', e, st);
+    // ignore: avoid_catching_errors
   } on ArgumentError catch (e, st) {
     failVerification(
         'Unable to parse `pubspec.yaml` from git repository. $e', e, st);

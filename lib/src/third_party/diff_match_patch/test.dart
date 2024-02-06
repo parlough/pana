@@ -1,8 +1,8 @@
 // ignore_for_file: invalid_use_of_visible_for_testing_member
 
-import 'package:pana/src/third_party/diff_match_patch/diff.dart';
-// ignore: depend_on_referenced_packages
 import 'package:test/test.dart';
+
+import 'diff.dart';
 
 void testDiffMain() {
   var expected = <Diff>[];
@@ -427,29 +427,34 @@ void testDiffLineToChars() {
       'Shared lines',
       'alpha\nbeta\nalpha\n',
       'beta\nalpha\nbeta\n',
-      {
-        'chars1': '\u0001\u0002\u0001',
-        'chars2': '\u0002\u0001\u0002',
-        'lineArray': ['', 'alpha\n', 'beta\n']
-      },
+      (
+        chars1: '\u0001\u0002\u0001',
+        chars2: '\u0002\u0001\u0002',
+        lineArray: ['', 'alpha\n', 'beta\n']
+      ),
     );
 
     _testDiffLineToChars(
       'Empty string and blank lines.',
       '',
       'alpha\r\nbeta\r\n\r\n\r\n',
-      {
-        'chars1': '',
-        'chars2': '\u0001\u0002\u0003\u0003',
-        'lineArray': ['', 'alpha\r\n', 'beta\r\n', '\r\n']
-      },
+      (
+        chars1: '',
+        chars2: '\u0001\u0002\u0003\u0003',
+        lineArray: ['', 'alpha\r\n', 'beta\r\n', '\r\n']
+      ),
     );
 
-    _testDiffLineToChars('No linebreaks.', 'a', 'b', {
-      'chars1': '\u0001',
-      'chars2': '\u0002',
-      'lineArray': ['', 'a', 'b']
-    });
+    _testDiffLineToChars(
+      'No linebreaks.',
+      'a',
+      'b',
+      (
+        chars1: '\u0001',
+        chars2: '\u0002',
+        lineArray: ['', 'a', 'b'],
+      ),
+    );
 
     // More than 256 to reveal any 8-bit limitations.
     var n = 300;
@@ -479,7 +484,7 @@ void testDiffLineToChars() {
       'More than 256.',
       lines,
       '',
-      {'chars1': chars, 'chars2': '', 'lineArray': lineList},
+      (chars1: chars, chars2: '', lineArray: lineList),
     );
   });
 }
@@ -544,8 +549,8 @@ void testDiffCharsToLines() {
 
     chars = lineList.join();
     final results = diffLinesToChars(chars, '');
-    diffs = [Diff(Operation.insert, results['chars1'] as String)];
-    diffCharsToLines(diffs, results['lineArray'] as List<String>);
+    diffs = [Diff(Operation.insert, results.chars1)];
+    diffCharsToLines(diffs, results.lineArray);
     test('More than 65536.', () => expect(chars, diffs[0].text));
   });
 }
@@ -1099,26 +1104,22 @@ void _testDiffLineToChars(
   String name,
   String text1,
   String text2,
-  Map<String, dynamic> expected,
+  ({String chars1, String chars2, List<String> lineArray}) expected,
 ) {
   test(name, () {
     final actual = diffLinesToChars(text1, text2);
     expect(
-      actual['chars1'],
-      expected['chars1'],
+      actual.chars1,
+      expected.chars1,
     );
     expect(
-      actual['chars2'],
-      expected['chars2'],
+      actual.chars2,
+      expected.chars2,
     );
     expect(
-      actual['lineArray'].length,
-      expected['lineArray'].length,
+      actual.lineArray,
+      expected.lineArray,
     );
-
-    for (var i = 0; i < (actual['lineArray'] as List<String>).length; i++) {
-      expect(actual['lineArray'][i], expected['lineArray'][i]);
-    }
   });
 }
 

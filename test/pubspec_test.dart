@@ -73,14 +73,7 @@ final Pubspec emptyPubspec = Pubspec({
 final Pubspec flutterPluginPubspec = Pubspec({
   'name': 'sample',
   'flutter': {
-    'plugin': {},
-  },
-});
-
-final Pubspec flutterDependencyPubspec = Pubspec({
-  'name': 'sample',
-  'dependencies': {
-    'flutter': 'any',
+    'plugin': <String, Object>{},
   },
 });
 

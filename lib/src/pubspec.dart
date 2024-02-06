@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart' as pubspek;
@@ -13,23 +14,27 @@ import 'null_safety.dart';
 
 class Pubspec {
   final pubspek.Pubspec _inner;
-  final Map _content;
+  final Map<String, Object?> _content;
 
   Set<String>? _dependentSdks;
 
-  Pubspec(Map content)
+  Pubspec(Map<String, Object?> content)
       : _inner = pubspek.Pubspec.fromJson(content, lenient: true),
         _content = content;
 
-  factory Pubspec.parseYaml(String content, {String? sourceUrl}) =>
-      Pubspec(Map<String, dynamic>.from(yaml.loadYaml(content,
-          sourceUrl: sourceUrl == null ? null : Uri.parse(sourceUrl)) as Map));
+  factory Pubspec.parseYaml(String content, {String? sourceUrl}) {
+    // Convert YAML to JSON and back so we can reliably work with Dart maps.
+    final decodedYaml = json.decode(json.encode(yaml.loadYaml(content,
+        sourceUrl: sourceUrl == null ? null : Uri.parse(sourceUrl))));
 
-  factory Pubspec.fromJson(Map<String, dynamic> json) => Pubspec(json);
+    return Pubspec(decodedYaml as Map<String, Object?>);
+  }
 
-  Map toJson() => _content;
+  factory Pubspec.fromJson(Map<String, Object?> json) => Pubspec(json);
 
-  Map get originalYaml => _content;
+  Map<String, Object?> toJson() => _content;
+
+  Map<String, Object?> get originalYaml => _content;
 
   String get name => _inner.name;
 
@@ -51,10 +56,10 @@ class Pubspec {
 
   bool get hasFlutterKey => _content.containsKey('flutter');
 
-  bool get hasFlutterPluginKey =>
-      hasFlutterKey &&
-      _content['flutter'] is Map &&
-      _content['flutter']['plugin'] != null;
+  bool get hasFlutterPluginKey => switch (_content) {
+        {'flutter': {'plugin': final _?}} => true,
+        _ => false,
+      };
 
   bool get dependsOnFlutterSdk => dependentSdks.contains('flutter');
 
@@ -86,7 +91,7 @@ class Pubspec {
   }
 
   Set<String> get unknownSdks {
-    var unknowns = Set<String>.from(dependentSdks);
+    var unknowns = Set<String>.of(dependentSdks);
     unknowns.remove('flutter');
     return unknowns;
   }

@@ -37,7 +37,7 @@ Future<ReportSection> multiPlatform(String packageDir, Pubspec pubspec) async {
 
     Subsection scorePlatforms(
         List<String> tags, List<Explanation> explanations) {
-      final tagNames = const {
+      const tagNames = {
         PanaTags.platformIos: 'iOS',
         PanaTags.platformAndroid: 'Android',
         PanaTags.platformWeb: 'Web',

@@ -541,7 +541,7 @@ class ToolEnvironment {
 
     final pubspec = File(p.join(packageDir, 'pubspec.yaml'));
     final original = await pubspec.readAsString();
-    final parsed = yamlToJson(original) ?? <String, dynamic>{};
+    final parsed = yamlToJson(original) ?? <String, Object?>{};
     parsed.remove('dev_dependencies');
     parsed.remove('dependency_overrides');
 
@@ -549,7 +549,8 @@ class ToolEnvironment {
     // and throws an exception if it is missing. While we no longer accept
     // new packages without such constraint, the old versions are still valid
     // and should be analyzed.
-    final environment = parsed.putIfAbsent('environment', () => {});
+    final environment =
+        parsed.putIfAbsent('environment', () => <String, String>{});
     if (environment is Map) {
       VersionConstraint? vc;
       if (environment['sdk'] is String) {

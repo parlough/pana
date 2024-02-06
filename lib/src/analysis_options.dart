@@ -128,16 +128,18 @@ String updatePassthroughOptions({
   }
   origMap ??= {};
 
-  final customMap =
-      json.decode(json.encode(yaml.loadYaml(custom))) ?? <String, dynamic>{};
+  final customMap = json.decode(json.encode(yaml.loadYaml(custom)))
+          as Map<String, Object?>? ??
+      {};
 
   final origAnalyzer = origMap['analyzer'];
   if (origAnalyzer is Map) {
     final origErrors = origAnalyzer['errors'];
     if (origErrors is Map) {
-      final customAnalyzer = customMap.putIfAbsent('analyzer', () => {}) as Map;
+      final customAnalyzer =
+          customMap.putIfAbsent('analyzer', () => <String, Object>{}) as Map;
       final customErrors =
-          customAnalyzer.putIfAbsent('errors', () => {}) as Map;
+          customAnalyzer.putIfAbsent('errors', () => <String, Object>{}) as Map;
 
       for (var key in _analyzerErrorKeys) {
         if (origErrors.containsKey(key)) {

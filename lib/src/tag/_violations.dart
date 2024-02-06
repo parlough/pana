@@ -105,7 +105,7 @@ PathFinder<Uri> runtimeViolationFinder(
 
 class DeclaredPlatformDetector {
   final PubspecCache _pubspecCache;
-  final _declaredPlatformCache = <String, Set<Platform>?>{};
+  final Map<String, Set<Platform>?> _declaredPlatformCache = {};
 
   DeclaredPlatformDetector(this._pubspecCache);
 
@@ -118,23 +118,20 @@ class DeclaredPlatformDetector {
   Set<Platform>? _declaredPlatforms(String packageName) {
     return _declaredPlatformCache.putIfAbsent(packageName, () {
       final fields = _pubspecCache.pubspecOfPackage(packageName).toJson();
-      if (fields['platforms'] is Map) {
+      print(fields);
+      if (fields['platforms']
+          case final Map<String, Object> declaredPlatforms) {
+        return {
+          for (final platform in Platform.recognizedPlatforms)
+            if (declaredPlatforms.containsKey(platform.name.toLowerCase()))
+              platform,
+        };
+      } else if (fields['flutter']
+          case {'plugin': final Map<String, Object?> pluginMap}) {
         final result = <Platform>{};
 
-        final declaredPlatforms = fields['platforms'] as Map;
-        for (final platform in Platform.recognizedPlatforms) {
-          if (declaredPlatforms.containsKey(platform.name.toLowerCase())) {
-            result.add(platform);
-          }
-        }
-        return result;
-      } else if (fields['flutter'] is Map &&
-          fields['flutter']['plugin'] is Map) {
-        final result = <Platform>{};
-
-        final pluginMap = fields['flutter']['plugin'] as Map;
         final declaredPlatforms = pluginMap['platforms'];
-        if (declaredPlatforms is Map) {
+        if (declaredPlatforms is Map<String, Object?>) {
           for (final platform in Platform.recognizedPlatforms) {
             if (declaredPlatforms.containsKey(platform.name.toLowerCase())) {
               result.add(platform);

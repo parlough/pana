@@ -429,21 +429,17 @@ List<String>? diffHalfMatch(String text1, String text2) {
 /// Returns a List of Diff objects.
 List<Diff> _diffLineMode(String text1, String text2, DateTime deadline) {
   // Scan the text on a line-by-line basis first.
-  final a = diffLinesToChars(text1, text2);
-
-  final linearray = a['lineArray'] as List<String>;
-  text1 = a['chars1'] as String;
-  text2 = a['chars2'] as String;
+  final (:chars1, :chars2, :lineArray) = diffLinesToChars(text1, text2);
 
   final diffs = diffMain(
-    text1,
-    text2,
+    chars1,
+    chars2,
     checklines: false,
     deadline: deadline,
   );
 
   // Convert the diff back to original text.
-  diffCharsToLines(diffs, linearray);
+  diffCharsToLines(diffs, lineArray);
   // Eliminate freak matches (e.g. blank lines)
   diffCleanupSemantic(diffs);
 
@@ -542,7 +538,7 @@ List<Diff> diffBisect(String text1, String text2, DateTime deadline) {
 
   for (var d = 0; d < maxD; d++) {
     // Bail out if deadline is reached.
-    if ((DateTime.now()).compareTo(deadline) == 1) {
+    if (DateTime.now().compareTo(deadline) == 1) {
       break;
     }
 

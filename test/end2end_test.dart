@@ -107,10 +107,11 @@ void main() {
 
       test('matches known good', () {
         void removeDependencyDetails(Map map) {
-          if (map.containsKey('pkgResolution') &&
-              (map['pkgResolution'] as Map).containsKey('dependencies')) {
-            final deps = (map['pkgResolution']['dependencies'] as List)
-                .cast<Map<dynamic, dynamic>>();
+          if (map
+              case {
+                'pkgResolution': {'dependencies': final List dependencies}
+              }) {
+            final deps = dependencies.cast<Map<dynamic, dynamic>>();
             for (final m in deps) {
               m.remove('resolved');
               m.remove('available');

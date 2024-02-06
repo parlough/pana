@@ -190,7 +190,10 @@ int fourtyTwo() => fourtyThree() - 1;
           'environment': {'flutter': '>=1.2.0<=2.0.0'},
           'flutter': {
             'plugin': {
-              'platforms': {'web': {}, 'ios': {}}
+              'platforms': {
+                'web': <String, String>{},
+                'ios': <String, String>{}
+              }
             }
           }
         }),
@@ -219,7 +222,10 @@ int fourtyTwo() => fourtyThree() - 1;
           'environment': {'flutter': '>=1.2.0<=2.0.0'},
           'flutter': {
             'plugin': {
-              'platforms': {'web': {}, 'ios': {}}
+              'platforms': {
+                'web': <String, String>{},
+                'ios': <String, String>{}
+              }
             }
           }
         }),
@@ -243,7 +249,10 @@ int fourtyTwo() => 42;
           'environment': {'flutter': '>=1.2.0<=2.0.0'},
           'flutter': {
             'plugin': {
-              'platforms': {'web': {}, 'ios': {}}
+              'platforms': {
+                'web': <String, String>{},
+                'ios': <String, String>{}
+              }
             }
           }
         }, dependencies: [
@@ -263,7 +272,10 @@ int fourtyTwo() => 42;
           'environment': {'flutter': '>=1.2.0<=2.0.0'},
           'flutter': {
             'plugin': {
-              'platforms': {'web': {}, 'linux': {}}
+              'platforms': {
+                'web': <String, String>{},
+                'linux': <String, String>{}
+              }
             }
           }
         })
@@ -529,7 +541,7 @@ name: my_package
       _expectTagging(tagger.flutterPluginTags, tags: isEmpty);
     });
     test('no dart files with Flutter plugins declarations', () async {
-      final decriptor = d.dir('cache', [
+      final descriptor = d.dir('cache', [
         packageWithPathDeps(
           'my_package',
           lib: [d.file('asset.json', '{"status": "ok"}')],
@@ -537,15 +549,18 @@ name: my_package
             'environment': {'flutter': '>=1.2.0<=2.0.0'},
             'flutter': {
               'plugin': {
-                'platforms': {'web': {}, 'ios': {}}
+                'platforms': {
+                  'web': <String, String>{},
+                  'ios': <String, String>{}
+                }
               }
             }
           },
         ),
       ]);
 
-      await decriptor.create();
-      final tagger = Tagger('${decriptor.io.path}/my_package');
+      await descriptor.create();
+      final tagger = Tagger('${descriptor.io.path}/my_package');
       _expectTagging(tagger.sdkTags, tags: {'sdk:flutter'});
       _expectTagging(tagger.platformTags, tags: {
         'platform:ios',
@@ -557,7 +572,8 @@ name: my_package
   });
 }
 
-Matcher _explanation({finding = anything, explanation = anything}) {
+Matcher _explanation(
+    {Object? finding = anything, Object? explanation = anything}) {
   return allOf(
     HasFinding(finding),
     _HasDescription(explanation),
@@ -565,16 +581,16 @@ Matcher _explanation({finding = anything, explanation = anything}) {
 }
 
 class _HasDescription extends CustomMatcher {
-  _HasDescription(matcher)
+  _HasDescription(Object? matcher)
       : super('Explanation with a', 'explanation', matcher);
 
   @override
-  String? featureValueOf(actual) => (actual as Explanation).explanation;
+  String? featureValueOf(Object? actual) => (actual as Explanation).explanation;
 }
 
 class HasFinding extends CustomMatcher {
-  HasFinding(matcher) : super('Explanation with a', 'finding', matcher);
+  HasFinding(Object? matcher) : super('Explanation with a', 'finding', matcher);
 
   @override
-  String featureValueOf(actual) => (actual as Explanation).finding;
+  String featureValueOf(Object? actual) => (actual as Explanation).finding;
 }
